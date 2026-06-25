@@ -32,7 +32,7 @@ exports.getEmailDraft = async (req, res, next) => {
     if (error || !request) return res.status(404).json({ error: 'Request not found' })
 
     const to = CATEGORY_MAP[request.category] || request.assigned_to
-    const subject = `[${request.category}] - בקשה חדשה מ-${request.citizen_name}`
+    const subject = `[${request.category}] - New request from ${request.citizen_name}`
     const body = generateEmailBody(request)
 
     res.json({ to, subject, body, requestId: id })
@@ -53,7 +53,7 @@ exports.sendEmail = async (req, res, next) => {
       from: process.env.OUTLOOK_EMAIL,
       to,
       subject,
-      html: body
+      html: plainToHtml(body)
     })
 
     await supabase
@@ -68,17 +68,29 @@ exports.sendEmail = async (req, res, next) => {
 }
 
 function generateEmailBody(request) {
-  return `
-    <div dir="rtl" style="font-family: Arial, sans-serif;">
-      <h3>בקשה חדשה</h3>
-      <p><strong>שם:</strong> ${request.citizen_name}</p>
-      <p><strong>דוא"ל:</strong> ${request.citizen_email}</p>
-      <p><strong>טלפון:</strong> ${request.citizen_phone}</p>
-      <p><strong>קטגוריה:</strong> ${request.category}</p>
-      <p><strong>הודעה:</strong></p>
-      <p>${request.message}</p>
-      <hr>
-      <p><small>מספר דוסייה: ${request.id}</small></p>
-    </div>
-  `
+  return `Dear colleague,
+
+A new citizen request has been submitted and assigned to your department.
+
+--------------------------------------------------
+Request #${request.id}
+Category: ${request.category}
+--------------------------------------------------
+
+Name:     ${request.citizen_name}
+Email:    ${request.citizen_email}
+Phone:    ${request.citizen_phone || 'N/A'}
+
+Message:
+${request.message}
+
+--------------------------------------------------
+Please review and respond to the citizen as soon as possible.
+
+Jerusalem Municipal Office - Arieh King's Office
+`
+}
+
+function plainToHtml(text) {
+  return `<pre style="font-family: Arial, sans-serif; font-size: 14px; white-space: pre-wrap;">${text}</pre>`
 }
