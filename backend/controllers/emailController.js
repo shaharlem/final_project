@@ -2,12 +2,13 @@ const nodemailer = require('nodemailer')
 const supabase = require('../models/database')
 
 const CATEGORY_MAP = {
-  'קנסות חנייה': 'natalie@jerusalem.gov.il',
-  'ערנונה': 'moche@jerusalem.gov.il',
-  'בקשות לתור': 'meir@jerusalem.gov.il',
-  'ניקיון עיר': 'gil@jerusalem.gov.il',
-  'אירועים': 'yehuda@jerusalem.gov.il',
-  'בטיחות דרכים': 'tzvi@jerusalem.gov.il'
+  'Parking fines':        'natali_za@jerusalem.muni.il',
+  'Property tax':         'Moshe_Tu@jerusalem.muni.il',
+  'Appointment requests': 'meir_na@jerusalem.muni.il',
+  'City cleaning':        'GOGILI@jerusalem.muni.il',
+  'Events':               'YNAFTALI@jerusalem.muni.il',
+  'Road safety':          'zvi_de@jerusalem.muni.il',
+  'Other':                'arking@jerusalem.muni.ac.il'
 }
 
 const transporter = nodemailer.createTransport({

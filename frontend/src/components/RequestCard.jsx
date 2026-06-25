@@ -1,12 +1,13 @@
 import StatusBadge from './StatusBadge'
 
 const CATEGORY_ICONS = {
-  'קנסות חנייה': '🅿️',
-  'ערנונה': '🏠',
-  'בקשות לתור': '📅',
-  'ניקיון עיר': '🧹',
-  'אירועים': '🎉',
-  'בטיחות דרכים': '🚦'
+  'Parking fines':        '🅿️',
+  'Property tax':         '🏠',
+  'Appointment requests': '📅',
+  'City cleaning':        '🧹',
+  'Events':               '🎉',
+  'Road safety':          '🚦',
+  'Other':                '📋'
 }
 
 function getDaysElapsed(createdAt) {

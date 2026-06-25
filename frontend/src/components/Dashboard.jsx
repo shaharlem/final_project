@@ -53,7 +53,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-left">
-          <h1>🏛️ Jerusalem City Hall</h1>
+          <h1>Arieh King's Office</h1>
           <p>Citizen Request Dashboard</p>
         </div>
         <div className="header-stats">

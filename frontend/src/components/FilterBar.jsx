@@ -1,11 +1,12 @@
 const CATEGORIES = [
   'All',
-  'קנסות חנייה',
-  'ערנונה',
-  'בקשות לתור',
-  'ניקיון עיר',
-  'אירועים',
-  'בטיחות דרכים'
+  'Parking fines',
+  'Property tax',
+  'City cleaning',
+  'Events',
+  'Road safety',
+  'Appointment requests',
+  'Other'
 ]
 
 const STATUSES = [
