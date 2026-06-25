@@ -28,7 +28,11 @@ router.post('/requests', async (req, res) => {
     return res.status(500).json({ error: 'Failed to save request' });
   }
 
-  return res.status(201).json({ data });
+  return res.status(201).json({
+    id: data.id,
+    category: data.category,
+    created_at: data.created_at,
+  });
 });
 
 module.exports = router;

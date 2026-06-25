@@ -336,7 +336,14 @@
             throw new Error(result.error || 'Failed to submit request');
           }
 
-          window.location.href = '/confirmation.html';
+          const result = await response.json();
+          const params = new URLSearchParams({
+            id: result.id,
+            category: result.category,
+            date: result.created_at,
+          });
+
+          window.location.href = `/confirmation.html?${params.toString()}`;
         } catch (error) {
           formError.textContent = error.message;
           formError.classList.add('is-visible');

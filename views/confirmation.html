@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request Submitted</title>
+    <style>
+      :root {
+        --navy: #0a1f3d;
+        --mustard: #d4a017;
+        --page-bg: #eef1f5;
+        --card-bg: #f7f8fa;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --border: #d7dce3;
+        --white: #ffffff;
+        --success: #16a34a;
+        --success-bg: #dcfce7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--page-bg);
+        color: var(--text);
+      }
+
+      .topbar {
+        background: var(--navy);
+        color: var(--white);
+        padding: 22px 32px;
+        border-bottom: 6px solid var(--mustard);
+      }
+
+      .topbar__title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .page {
+        max-width: 720px;
+        margin: 40px auto;
+        padding: 0 20px 40px;
+      }
+
+      .confirmation-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(10, 31, 61, 0.08);
+        border-radius: 20px;
+        padding: 40px 32px;
+        box-shadow: 0 12px 35px rgba(10, 31, 61, 0.08);
+        text-align: center;
+      }
+
+      .success-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 24px;
+        border-radius: 50%;
+        background: var(--success-bg);
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .confirmation-card h1 {
+        margin: 0 0 14px;
+        color: var(--navy);
+        font-size: 1.9rem;
+      }
+
+      .confirmation-card > p {
+        margin: 0 auto 28px;
+        color: var(--muted);
+        line-height: 1.6;
+        max-width: 520px;
+      }
+
+      .case-card {
+        background: var(--navy);
+        color: var(--white);
+        border-radius: 18px;
+        padding: 24px;
+        text-align: left;
+        margin-bottom: 24px;
+      }
+
+      .case-card h2 {
+        margin: 0 0 18px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--mustard);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .case-details {
+        display: grid;
+        gap: 14px;
+      }
+
+      .case-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .case-row:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .case-label {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.92rem;
+      }
+
+      .case-value {
+        font-weight: 700;
+        text-align: right;
+      }
+
+      .email-note {
+        margin: 0 0 28px;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 180px;
+        padding: 14px 22px;
+        border-radius: 999px;
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: filter 0.2s ease, background 0.2s ease;
+      }
+
+      .btn:hover {
+        filter: brightness(1.03);
+      }
+
+      .btn-primary {
+        background: var(--navy);
+        color: var(--white);
+        border: 2px solid var(--navy);
+      }
+
+      .btn-outline {
+        background: var(--white);
+        color: var(--navy);
+        border: 2px solid var(--border);
+      }
+
+      @media (max-width: 640px) {
+        .topbar {
+          padding: 18px 20px;
+        }
+
+        .page {
+          margin: 24px auto;
+          padding: 0 14px 24px;
+        }
+
+        .confirmation-card {
+          padding: 28px 20px;
+          border-radius: 18px;
+        }
+
+        .confirmation-card h1 {
+          font-size: 1.6rem;
+        }
+
+        .case-row {
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .case-value {
+          text-align: left;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <p class="topbar__title">Citizen Services Portal</p>
+    </header>
+
+    <main class="page">
+      <section class="confirmation-card">
+        <div class="success-icon" aria-hidden="true">✓</div>
+
+        <h1>Thank You for Your Submission</h1>
+        <p>
+          Your request has been successfully received. We will follow up with you
+          via email within 3-5 business days.
+        </p>
+
+        <article class="case-card">
+          <h2>Case Information</h2>
+          <dl class="case-details">
+            <div class="case-row">
+              <dt class="case-label">Case Number</dt>
+              <dd class="case-value">REQ-2026-00482</dd>
+            </div>
+            <div class="case-row">
+              <dt class="case-label">Category</dt>
+              <dd class="case-value">Parking fines</dd>
+            </div>
+            <div class="case-row">
+              <dt class="case-label">Submission Date</dt>
+              <dd class="case-value">June 25, 2026</dd>
+            </div>
+          </dl>
+        </article>
+
+        <p class="email-note">
+          A confirmation copy has been sent to your registered email address
+        </p>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="#">View My Requests</a>
+          <a class="btn btn-outline" href="/">Return to Home</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const categoryLabels = {
+        parking_fines: 'Parking fines',
+        property_tax: 'Property tax',
+        appointment_requests: 'Appointment requests',
+        city_cleaning: 'City cleaning',
+        events: 'Events',
+        road_safety: 'Road safety',
+        other: 'Other',
+      };
+
+      function formatSubmissionDate(dateString) {
+        const parsed = new Date(dateString);
+
+        if (Number.isNaN(parsed.getTime())) {
+          return '—';
+        }
+
+        return new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }).format(parsed);
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const category = params.get('category');
+      const date = params.get('date');
+
+      document.getElementById('caseNumber').textContent = id || '—';
+      document.getElementById('caseCategory').textContent =
+        categoryLabels[category] || category || '—';
+      document.getElementById('caseDate').textContent = date
+        ? formatSubmissionDate(date)
+        : '—';
+    </script>
+  </body>
+</html>
