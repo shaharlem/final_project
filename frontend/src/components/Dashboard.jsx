@@ -4,6 +4,7 @@ import RequestCard from './RequestCard'
 import RequestModal from './RequestModal'
 import FilterBar from './FilterBar'
 import SearchBar from './SearchBar'
+import supabase from '../api/supabase'
 import '../styles/dashboard.css'
 
 export default function Dashboard() {
@@ -32,6 +33,21 @@ export default function Dashboard() {
     const timer = setTimeout(fetchRequests, 300)
     return () => clearTimeout(timer)
   }, [fetchRequests])
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('requests-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, () => {
+        fetchRequests()
+      })
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
+  }, [fetchRequests])
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+  }
 
   function handleStatusChange(id, newStatus) {
     setRequests((prev) =>
@@ -62,6 +78,9 @@ export default function Dashboard() {
           <div className="stat sent"><span>{counts.sent}</span><label>Sent</label></div>
           <div className="stat responded"><span>{counts.responded}</span><label>Responded</label></div>
         </div>
+        <button onClick={handleLogout} className="logout-btn">
+          Sign out
+        </button>
       </header>
 
       <div className="dashboard-controls">
