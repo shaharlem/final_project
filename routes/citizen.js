@@ -29,8 +29,7 @@ async function categorizeMessage(message) {
           role: 'system',
           content:
             'You categorize citizen requests for a municipality. ' +
-            'Return JSON only in this exact format: {"category": "...", "confidence": 0.0}. ' +
-            'confidence must be a number between 0.0 and 1.0. ' +
+            'Return JSON only in this exact format: {"category": "..."}. ' +
             'category must be exactly one of: parking_fines, property_tax, appointment_requests, city_cleaning, events, road_safety, other.',
         },
         {
@@ -49,17 +48,12 @@ async function categorizeMessage(message) {
 
     const parsed = JSON.parse(content);
     const category = parsed.category;
-    const confidence = Number(parsed.confidence);
 
     if (!VALID_CATEGORIES.includes(category)) {
       return null;
     }
 
-    if (Number.isNaN(confidence) || confidence < 0 || confidence > 1) {
-      return null;
-    }
-
-    return { category, confidence };
+    return category;
   } catch (error) {
     console.error('OpenAI categorization error:', error);
     return null;
@@ -73,8 +67,7 @@ router.post('/requests', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const aiResult = await categorizeMessage(message);
-  const ai_confidence = aiResult ? aiResult.confidence : null;
+  const ai_category = await categorizeMessage(message);
 
   const { data, error } = await supabase
     .from('requests')
@@ -85,7 +78,7 @@ router.post('/requests', async (req, res) => {
       category,
       message,
       status: 'new',
-      ai_confidence,
+      ai_category,
     })
     .select()
     .single();
