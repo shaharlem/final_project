@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const citizenRoutes = require('./routes/citizen');
+const { startBot } = require('./bot/telegram');
 
 const app = express();
 
@@ -18,4 +19,5 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  startBot();
 });
