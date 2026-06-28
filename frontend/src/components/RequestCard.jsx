@@ -24,16 +24,15 @@ export default function RequestCard({ request, onClick }) {
 
   return (
     <div className={`request-card${lowConfidence ? ' low-confidence' : ''}`} onClick={() => onClick(request)}>
+      {lowConfidence && (
+        <div className="low-confidence-ribbon">
+          ⚠ LOW AI — {Math.round(request.ai_confidence * 100)}%
+        </div>
+      )}
+
       <div className="card-header">
         <span className="card-id">#{request.id}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {lowConfidence && (
-            <span className="confidence-flag" title={`Low AI confidence: ${Math.round(request.ai_confidence * 100)}%`}>
-              ⚠️ Low AI
-            </span>
-          )}
-          <StatusBadge status={request.status} />
-        </div>
+        <StatusBadge status={request.status} />
       </div>
 
       <div className="card-body">
