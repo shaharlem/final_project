@@ -4,10 +4,10 @@ const normalizeCategory = require('../models/normalizeCategory')
 const { getStaff } = require('../models/staffMap')
 
 const transporter = nodemailer.createTransport({
-  service: 'outlook',
+  service: 'gmail',
   auth: {
-    user: process.env.OUTLOOK_EMAIL,
-    pass: process.env.OUTLOOK_PASSWORD
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
   }
 })
 
@@ -44,7 +44,7 @@ exports.sendEmail = async (req, res, next) => {
     }
 
     await transporter.sendMail({
-      from: process.env.OUTLOOK_EMAIL,
+      from: process.env.GMAIL_USER,
       to,
       subject,
       html: plainToHtml(body)

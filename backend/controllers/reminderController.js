@@ -7,10 +7,10 @@ const { getStaff } = require('../models/staffMap')
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000
 
 const transporter = nodemailer.createTransport({
-  service: 'outlook',
+  service: 'gmail',
   auth: {
-    user: process.env.OUTLOOK_EMAIL,
-    pass: process.env.OUTLOOK_PASSWORD
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
   }
 })
 
@@ -46,7 +46,7 @@ exports.runReminders = async (req, res, next) => {
       const daysPending = Math.floor((Date.now() - new Date(request.sent_at)) / (1000 * 60 * 60 * 24))
 
       await transporter.sendMail({
-        from: process.env.OUTLOOK_EMAIL,
+        from: process.env.GMAIL_USER,
         to,
         subject: `[REMINDER] [${category}] - Pending response from ${request.citizen_name} (${daysPending} days)`,
         html: `<pre style="font-family: Arial, sans-serif; font-size: 14px; white-space: pre-wrap;">${generateReminderBody(request, category, name, daysPending)}</pre>`
