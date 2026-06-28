@@ -2,17 +2,17 @@
    TOKENS
 ───────────────────────────────────── */
 :root {
-  --font:      'Fira Sans', 'Segoe UI', system-ui, sans-serif;
-  --mono:      'Fira Code', 'Courier New', monospace;
-  --navy:      #1B2B4B;
-  --terracotta: #C8A845;
-  --border:    #E8EAED;
-  --bg:        #F0F2F5;
-  --surface:   #ffffff;
-  --text:      #111827;
-  --muted:     #9CA3AF;
-  --radius:    12px;
-  --focus-ring: 0 0 0 3px rgba(200,168,69,0.25);
+  --font:      'Poppins', Arial, sans-serif;
+  --mono:      'Courier New', monospace;
+  --navy:      #0a1f3d;
+  --terracotta: #d4a017;
+  --border:    #d7dce3;
+  --bg:        #eef1f5;
+  --surface:   #f7f8fa;
+  --text:      #1f2937;
+  --muted:     #6b7280;
+  --radius:    20px;
+  --focus-ring: 0 0 0 3px rgba(212,160,23,0.25);
 }
 
 /* ─────────────────────────────────────
@@ -51,7 +51,7 @@
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
 }
-.kpi-icon--orange { background: #FEF0EB; color: #C8A845; }
+.kpi-icon--orange { background: #FEF0EB; color: #d4a017; }
 .kpi-icon--blue   { background: #EFF6FF; color: #2563EB; }
 .kpi-icon--green  { background: #F0FDF4; color: #16A34A; }
 
@@ -67,7 +67,7 @@
   color: var(--text); letter-spacing: -0.5px;
   line-height: 1; font-family: var(--mono);
 }
-.kpi-num--orange { color: #C8A845; }
+.kpi-num--orange { color: #d4a017; }
 .kpi-num--blue   { color: #2563EB; }
 .kpi-num--green  { color: #16A34A; }
 
@@ -233,14 +233,14 @@
 }
 .status-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
-.status-new      { background: #FEF3EE; color: #C8A845; }
-.status-new      .status-dot { background: #C8A845; }
+.status-new      { background: #FEF3EE; color: #d4a017; }
+.status-new      .status-dot { background: #d4a017; }
 .status-sent     { background: #EFF6FF; color: #2563EB; }
 .status-sent     .status-dot { background: #2563EB; }
 .status-responded{ background: #F0FDF4; color: #16A34A; }
 .status-responded .status-dot { background: #16A34A; }
 .status-closed   { background: #F3F4F6; color: #6B7280; }
-.status-closed   .status-dot { background: #9CA3AF; }
+.status-closed   .status-dot { background: #6b7280; }
 .status-waiting_response { background: #FFF7ED; color: #EA580C; }
 .status-waiting_response .status-dot { background: #EA580C; }
 
@@ -351,7 +351,7 @@
 }
 .btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-primary, .btn-success { background: var(--terracotta); color: #fff; box-shadow: 0 2px 6px rgba(200,168,69,0.3); }
+.btn-primary, .btn-success { background: var(--terracotta); color: #fff; box-shadow: 0 2px 6px rgba(212,160,23,0.3); }
 .btn-gray { background: #F0F2F5; color: var(--text); border: 1px solid var(--border); }
 
 .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; font-weight: 500; }
@@ -368,7 +368,7 @@
 .loading::before {
   content: ''; display: block;
   width: 28px; height: 28px;
-  border: 2px solid #E8EAED; border-top-color: var(--terracotta);
+  border: 2px solid #d7dce3; border-top-color: var(--terracotta);
   border-radius: 50%; animation: spin 0.7s linear infinite;
   margin: 0 auto 16px;
 }
@@ -419,7 +419,7 @@
   border: none; border-radius: 8px; height: 42px;
   font-size: 14px; font-weight: 600; cursor: pointer;
   font-family: var(--font); transition: background 0.15s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(200,168,69,0.3); margin-top: 4px;
+  box-shadow: 0 2px 8px rgba(212,160,23,0.3); margin-top: 4px;
 }
 .login-submit:hover:not(:disabled) { background: #A84E30; transform: translateY(-1px); }
 .login-submit:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -462,7 +462,7 @@
 }
 .kpi-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
 .kpi-value { font-size: 26px; font-weight: 700; color: var(--text); font-family: var(--mono); letter-spacing: -0.4px; }
-.kpi-new .kpi-value  { color: #C8A845; }
+.kpi-new .kpi-value  { color: #d4a017; }
 .kpi-sent .kpi-value { color: #2563EB; }
 .kpi-done .kpi-value { color: #16A34A; }
 
