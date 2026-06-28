@@ -3,7 +3,7 @@
 ───────────────────────────────────── */
 :root {
   --font:      'Poppins', Arial, sans-serif;
-  --mono:      'Courier New', monospace;
+  --mono:      'Poppins', Arial, sans-serif;
   --navy:      #0a1f3d;
   --terracotta: #d4a017;
   --border:    #d7dce3;
