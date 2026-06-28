@@ -89,17 +89,24 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
           )}
 
           {tab === 'details' && (
-            <div className="details-grid">
-              <div className="detail-row"><strong>Name</strong><span>{request.citizen_name}</span></div>
-              <div className="detail-row"><strong>Email</strong><span>{request.citizen_email}</span></div>
-              <div className="detail-row"><strong>Phone</strong><span>{request.citizen_phone}</span></div>
-              <div className="detail-row"><strong>Category</strong><span>{request.category}</span></div>
-              <div className="detail-row"><strong>Assigned to</strong><span>{request.assigned_to || '—'}</span></div>
-              {request.ai_confidence != null && (
-                <div className="detail-row"><strong>AI Confidence</strong><span>{Math.round(request.ai_confidence * 100)}%</span></div>
+            <div>
+              {request.ai_confidence != null && request.ai_confidence < 0.8 && (
+                <div className="alert alert-error" style={{ marginBottom: '14px' }}>
+                  ⚠️ Low AI confidence ({Math.round(request.ai_confidence * 100)}%) — please verify the category manually before sending.
+                </div>
               )}
-              <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
-              <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
+              <div className="details-grid">
+                <div className="detail-row"><strong>Name</strong><span>{request.citizen_name}</span></div>
+                <div className="detail-row"><strong>Email</strong><span>{request.citizen_email}</span></div>
+                <div className="detail-row"><strong>Phone</strong><span>{request.citizen_phone}</span></div>
+                <div className="detail-row"><strong>Category</strong><span>{request.category}</span></div>
+                <div className="detail-row"><strong>Assigned to</strong><span>{request.assigned_to || '—'}</span></div>
+                {request.ai_confidence != null && (
+                  <div className="detail-row"><strong>AI Confidence</strong><span>{Math.round(request.ai_confidence * 100)}%</span></div>
+                )}
+                <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
+                <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
+              </div>
             </div>
           )}
 
