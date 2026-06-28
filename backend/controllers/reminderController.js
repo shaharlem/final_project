@@ -74,10 +74,6 @@ function generateReminderBody(request, category, name, days) {
 
 This is a friendly reminder that the following citizen request has been waiting for your response for ${days} days and has not yet been handled.
 
---------------------------------------------------
-Request #${request.id} | Category: ${category}
---------------------------------------------------
-
 Citizen name:  ${request.citizen_name}
 Email:         ${request.citizen_email}
 Phone:         ${request.citizen_phone || 'N/A'}
@@ -85,7 +81,6 @@ Phone:         ${request.citizen_phone || 'N/A'}
 Original message:
 ${request.message}
 
---------------------------------------------------
 Please follow up with the citizen at your earliest convenience.
 
 Best regards,

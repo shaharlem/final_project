@@ -95,7 +95,9 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
               <div className="detail-row"><strong>Phone</strong><span>{request.citizen_phone}</span></div>
               <div className="detail-row"><strong>Category</strong><span>{request.category}</span></div>
               <div className="detail-row"><strong>Assigned to</strong><span>{request.assigned_to || '—'}</span></div>
-              <div className="detail-row"><strong>AI Confidence</strong><span>{request.ai_confidence ? `${Math.round(request.ai_confidence * 100)}%` : '—'}</span></div>
+              {request.ai_confidence != null && (
+                <div className="detail-row"><strong>AI Confidence</strong><span>{Math.round(request.ai_confidence * 100)}%</span></div>
+              )}
               <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
               <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
             </div>

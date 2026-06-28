@@ -69,10 +69,6 @@ function generateEmailBody(request, staff) {
 
 ${intro}
 
---------------------------------------------------
-Request #${request.id} | Category: ${request.category}
---------------------------------------------------
-
 Citizen name:  ${request.citizen_name}
 Email:         ${request.citizen_email}
 Phone:         ${request.citizen_phone || 'N/A'}
@@ -80,7 +76,6 @@ Phone:         ${request.citizen_phone || 'N/A'}
 Message from citizen:
 ${request.message}
 
---------------------------------------------------
 Kindly follow up with the citizen at your earliest convenience.
 
 Best regards,
