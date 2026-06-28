@@ -133,6 +133,14 @@
         font-size: 1.05rem;
         margin-bottom: 8px;
       }
+       
+      .file-name {
+        display: block;
+        margin-top: 10px;
+        font-weight: 700;
+        color: var(--navy);
+        font-size: 0.95rem;
+      }
 
       .upload-box input[type="file"] {
         position: absolute;
@@ -288,6 +296,7 @@
               <span class="helper-text"
                 >JPG, PNG, PDF, DOCX up to 10MB</span
               >
+              <span id="fileName" class="file-name"></span>
               <input id="documents" name="documents" type="file" multiple />
             </div>
           </div>
@@ -306,43 +315,54 @@
       const form = document.getElementById('requestForm');
       const submitButton = document.getElementById('submitButton');
       const formError = document.getElementById('formError');
+      const fileInput = document.getElementById('documents');
+const fileNameDisplay = document.getElementById('fileName');
 
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length > 0) {
+    fileNameDisplay.textContent = `Selected file: ${fileInput.files[0].name}`;
+  } else {
+    fileNameDisplay.textContent = '';
+  }
+});
+    
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
-
+    
         formError.classList.remove('is-visible');
         formError.textContent = '';
         submitButton.disabled = true;
-
-        const payload = {
-          citizen_name: document.getElementById('fullName').value.trim(),
-          citizen_email: document.getElementById('email').value.trim(),
-          citizen_phone: document.getElementById('phone').value.trim(),
-          category: document.getElementById('category').value,
-          message: document.getElementById('message').value.trim(),
-        };
-
+    
+        const formData = new FormData();
+        formData.append('citizen_name', document.getElementById('fullName').value.trim());
+        formData.append('citizen_email', document.getElementById('email').value.trim());
+        formData.append('citizen_phone', document.getElementById('phone').value.trim());
+        formData.append('category', document.getElementById('category').value);
+        formData.append('message', document.getElementById('message').value.trim());
+    
+        const fileInput = document.getElementById('documents');
+        if (fileInput.files.length > 0) {
+          formData.append('document', fileInput.files[0]);
+        }
+    
         try {
           const response = await fetch('/api/requests', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
+            body: formData,
           });
-
+    
           if (!response.ok) {
             const result = await response.json().catch(() => ({}));
             throw new Error(result.error || 'Failed to submit request');
           }
-
+    
           const result = await response.json();
           const params = new URLSearchParams({
             id: result.id,
             category: result.category,
             date: result.created_at,
           });
-
+    
           window.location.href = `/confirmation.html?${params.toString()}`;
         } catch (error) {
           formError.textContent = error.message;
