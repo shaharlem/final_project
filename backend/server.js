@@ -6,6 +6,8 @@ const requestRoutes = require('./routes/requests')
 const emailRoutes = require('./routes/emails')
 const responseRoutes = require('./routes/responses')
 const reminderRoutes = require('./routes/reminders')
+const citizenRoutes = require('./routes/citizens')
+const reportRoutes = require('./routes/reports')
 const errorHandler = require('./middleware/errorHandler')
 const { runReminders } = require('./controllers/reminderController')
 
@@ -18,6 +20,8 @@ app.use('/api/requests', requestRoutes)
 app.use('/api/emails', emailRoutes)
 app.use('/api/responses', responseRoutes)
 app.use('/api/reminders', reminderRoutes)
+app.use('/api/citizens', citizenRoutes)
+app.use('/api/reports', reportRoutes)
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }))
 

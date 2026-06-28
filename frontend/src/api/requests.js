@@ -36,3 +36,15 @@ export async function closeRequest(id, closedBy, notes) {
   if (!res.ok) throw new Error('Failed to close request')
   return res.json()
 }
+
+export async function getCitizens() {
+  const res = await fetch(`${BASE_URL}/citizens`)
+  if (!res.ok) throw new Error('Failed to fetch citizens')
+  return res.json()
+}
+
+export async function getReports() {
+  const res = await fetch(`${BASE_URL}/reports`)
+  if (!res.ok) throw new Error('Failed to fetch reports')
+  return res.json()
+}

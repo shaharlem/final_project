@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import DashboardPage from './pages/Dashboard'
 import Login from './pages/Login'
+import Citizens from './pages/Citizens'
+import Reports from './pages/Reports'
 import NotFound from './pages/NotFound'
 import supabase from './api/supabase'
 
@@ -34,6 +36,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={session ? <Navigate to="/" /> : <Login />} />
         <Route path="/" element={session ? <DashboardPage /> : <Navigate to="/login" />} />
+        <Route path="/citizens" element={session ? <Citizens /> : <Navigate to="/login" />} />
+        <Route path="/reports" element={session ? <Reports /> : <Navigate to="/login" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

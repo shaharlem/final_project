@@ -1,13 +1,18 @@
+import { motion } from 'framer-motion'
+import {
+  ParkingCircle, Home, Calendar, Trash2,
+  Music, ShieldAlert, FileText, AlertTriangle
+} from 'lucide-react'
 import StatusBadge from './StatusBadge'
 
 const CATEGORY_ICONS = {
-  'Parking fines':        '🅿️',
-  'Property tax':         '🏠',
-  'Appointment requests': '📅',
-  'City cleaning':        '🧹',
-  'Events':               '🎉',
-  'Road safety':          '🚦',
-  'Other':                '📋'
+  'Parking fines':        ParkingCircle,
+  'Property tax':         Home,
+  'Appointment requests': Calendar,
+  'City cleaning':        Trash2,
+  'Events':               Music,
+  'Road safety':          ShieldAlert,
+  'Other':                FileText,
 }
 
 function getDaysElapsed(createdAt) {
@@ -18,15 +23,25 @@ function getDaysElapsed(createdAt) {
 const LOW_CONFIDENCE = 0.8
 
 export default function RequestCard({ request, onClick }) {
-  const icon = CATEGORY_ICONS[request.category] || '📋'
+  const Icon = CATEGORY_ICONS[request.category] || FileText
   const days = getDaysElapsed(request.created_at)
   const lowConfidence = request.ai_confidence != null && request.ai_confidence < LOW_CONFIDENCE
 
   return (
-    <div className={`request-card${lowConfidence ? ' low-confidence' : ''}`} onClick={() => onClick(request)}>
+    <motion.div
+      className={`request-card${lowConfidence ? ' low-confidence' : ''}`}
+      data-status={request.status}
+      onClick={() => onClick(request)}
+      tabIndex={0}
+      role="button"
+      aria-label={`Request from ${request.citizen_name} — ${request.category}`}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onClick(request)}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+    >
       {lowConfidence && (
-        <div className="low-confidence-ribbon">
-          ⚠ LOW AI — {Math.round(request.ai_confidence * 100)}%
+        <div className="low-confidence-ribbon" aria-label={`Low AI confidence: ${Math.round(request.ai_confidence * 100)}%`}>
+          LOW AI — {Math.round(request.ai_confidence * 100)}%
         </div>
       )}
 
@@ -39,17 +54,21 @@ export default function RequestCard({ request, onClick }) {
         <div className="citizen-name">{request.citizen_name}</div>
         <div className="citizen-email">{request.citizen_email}</div>
         <div className="category">
-          <span className="category-icon">{icon}</span>
+          <span className="category-icon" aria-hidden="true">
+            <Icon size={12} strokeWidth={2} />
+          </span>
           <span>{request.category}</span>
         </div>
       </div>
 
       <div className="card-footer">
         <span className="days-elapsed">
-          {days === 0 ? 'Today' : `${days} day${days > 1 ? 's' : ''} ago`}
+          {days === 0 ? 'Today' : `${days}d ago`}
         </span>
-        <button className="view-btn">View Details →</button>
+        <button className="view-btn" tabIndex={-1} aria-hidden="true">
+          View →
+        </button>
       </div>
-    </div>
+    </motion.div>
   )
 }
