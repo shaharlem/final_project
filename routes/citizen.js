@@ -11,7 +11,7 @@ router.post('/requests', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const ai_category = await categorizeMessage(message);
+  const aiResult = await categorizeMessage(message);
 
   const { data, error } = await supabase
     .from('requests')
@@ -22,7 +22,8 @@ router.post('/requests', async (req, res) => {
       category,
       message,
       status: 'new',
-      ai_category,
+      ai_category: aiResult ? aiResult.category : null,
+      ai_confidence: aiResult ? aiResult.confidence : null,
     })
     .select()
     .single();

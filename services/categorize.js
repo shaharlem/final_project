@@ -25,8 +25,9 @@ async function categorizeMessage(message) {
           role: 'system',
           content:
             'You categorize citizen requests for a municipality. ' +
-            'Return JSON only in this exact format: {"category": "..."}. ' +
-            'category must be exactly one of: parking_fines, property_tax, appointment_requests, city_cleaning, events, road_safety, other.',
+            'Return JSON only in this exact format: {"category": "...", "confidence": 0.95}. ' +
+            'category must be exactly one of: parking_fines, property_tax, appointment_requests, city_cleaning, events, road_safety, other. ' +
+            'confidence must be a number between 0 and 1 representing how confident you are in the category.',
         },
         {
           role: 'user',
@@ -44,12 +45,13 @@ async function categorizeMessage(message) {
 
     const parsed = JSON.parse(content);
     const category = parsed.category;
+    const confidence = typeof parsed.confidence === 'number' ? Math.min(1, Math.max(0, parsed.confidence)) : null;
 
     if (!VALID_CATEGORIES.includes(category)) {
       return null;
     }
 
-    return category;
+    return { category, confidence };
   } catch (error) {
     console.error('OpenAI categorization error:', error);
     return null;
