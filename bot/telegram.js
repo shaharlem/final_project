@@ -36,7 +36,7 @@ async function saveRequest(bot, chatId, session, fileBuffer, fileName, fileMimeT
     }
   }
 
-  const ai_category = await categorizeMessage(session.data.message);
+  const aiResult = await categorizeMessage(session.data.message);
 
   const { data, error } = await supabase
     .from('requests')
@@ -47,7 +47,8 @@ async function saveRequest(bot, chatId, session, fileBuffer, fileName, fileMimeT
       category: session.data.category,
       message: session.data.message,
       status: 'new',
-      ai_category,
+      ai_category: aiResult ? aiResult.category : null,
+      ai_confidence: aiResult ? aiResult.confidence : null,
       file_path,
     })
     .select()
