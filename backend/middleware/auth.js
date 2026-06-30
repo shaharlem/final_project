@@ -6,7 +6,8 @@ const VALID_EMAILS = [
   'YNAFTALI@jerusalem.muni.il',
   'zvi_de@jerusalem.muni.il',
   'ERSMADAR@jerusalem.muni.il',
-  'arking@jerusalem.muni.ac.il'
+  'arking@jerusalem.muni.ac.il',
+  'haimtouboul@gmail.com'
 ]
 
 function validateStaffEmail(email) {
