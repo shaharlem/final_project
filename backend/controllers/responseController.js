@@ -4,10 +4,10 @@ const Response = require('../models/Response')
 const { validateStaffEmail } = require('../middleware/auth')
 
 const transporter = nodemailer.createTransport({
-  service: 'outlook',
+  service: 'gmail',
   auth: {
-    user: process.env.OUTLOOK_EMAIL,
-    pass: process.env.OUTLOOK_PASSWORD
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
   }
 })
 
@@ -41,7 +41,7 @@ exports.saveResponse = async (req, res, next) => {
     `
 
     await transporter.sendMail({
-      from: process.env.OUTLOOK_EMAIL,
+      from: process.env.GMAIL_USER,
       to: request.citizen_email,
       subject: `תשובה לבקשתך - מספר ${request.id}`,
       html: citizenEmailBody

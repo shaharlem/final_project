@@ -89,7 +89,7 @@ export default function Dashboard() {
       {/* ── KPI row ── */}
       <div className="kpi-row">
 
-        <div className="kpi-card-v2 kpi-card--gray">
+        <div className={`kpi-card-v2 kpi-card--gray kpi-card--clickable${status === '' ? ' kpi-card--active' : ''}`} onClick={() => setStatus('')}>
           <div className="kpi-card-top">
             <div className="kpi-icon kpi-icon--orange">
               <Inbox size={15} strokeWidth={2} />
@@ -99,7 +99,7 @@ export default function Dashboard() {
           <div className="kpi-lbl">Total requests</div>
         </div>
 
-        <div className="kpi-card-v2 kpi-card--orange">
+        <div className={`kpi-card-v2 kpi-card--orange kpi-card--clickable${status === 'new' ? ' kpi-card--active' : ''}`} onClick={() => setStatus(status === 'new' ? '' : 'new')}>
           <div className="kpi-card-top">
             <div className="kpi-icon kpi-icon--orange">
               <Sparkles size={15} strokeWidth={2} />
@@ -112,7 +112,7 @@ export default function Dashboard() {
           <div className="kpi-lbl">New</div>
         </div>
 
-        <div className="kpi-card-v2 kpi-card--blue">
+        <div className={`kpi-card-v2 kpi-card--blue kpi-card--clickable${status === 'sent' ? ' kpi-card--active' : ''}`} onClick={() => setStatus(status === 'sent' ? '' : 'sent')}>
           <div className="kpi-card-top">
             <div className="kpi-icon kpi-icon--blue">
               <Send size={15} strokeWidth={2} />
@@ -122,7 +122,7 @@ export default function Dashboard() {
           <div className="kpi-lbl">In progress</div>
         </div>
 
-        <div className="kpi-card-v2 kpi-card--green">
+        <div className={`kpi-card-v2 kpi-card--green kpi-card--clickable${status === 'responded' ? ' kpi-card--active' : ''}`} onClick={() => setStatus(status === 'responded' ? '' : 'responded')}>
           <div className="kpi-card-top">
             <div className="kpi-icon kpi-icon--green">
               <CheckCircle size={15} strokeWidth={2} />
