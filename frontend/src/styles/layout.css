@@ -125,10 +125,10 @@ body {
   position: sticky; top: 0; z-index: 40; flex-shrink: 0;
 }
 .topbar-left h1 {
-  font-size: 15px; font-weight: 700; color: #1f2937; line-height: 22px;
+  font-size: 16px; font-weight: 700; color: #0a1f3d; line-height: 22px; letter-spacing: -0.01em;
 }
 .topbar-left p {
-  font-size: 11px; color: #6b7280; line-height: 16px; margin-top: 3px;
+  font-size: 11px; color: #9ca3af; line-height: 16px; margin-top: 2px; letter-spacing: 0.02em;
 }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 
