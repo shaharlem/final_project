@@ -5,6 +5,12 @@ import StatusBadge from './StatusBadge'
 import EmailPreview from './EmailPreview'
 import supabase from '../api/supabase'
 
+function toIsraelTime(dateStr) {
+  if (!dateStr) return '—'
+  const normalized = dateStr.endsWith('Z') || dateStr.includes('+') ? dateStr : dateStr + 'Z'
+  return new Date(normalized).toLocaleString('en-GB', { timeZone: 'Asia/Jerusalem' })
+}
+
 export default function RequestModal({ request, allRequests = [], onClose, onStatusChange }) {
   const [draft, setDraft] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -142,8 +148,8 @@ export default function RequestModal({ request, allRequests = [], onClose, onSta
                 {request.ai_confidence != null && (
                   <div className="detail-row"><strong>AI Confidence</strong><span>{Math.round(request.ai_confidence * 100)}%</span></div>
                 )}
-                <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
-                <div className="detail-row"><strong>Source</strong><span>{request.source === 'telegram' ? '✈ Telegram' : '🌐 Web'}</span></div>
+                <div className="detail-row"><strong>Created</strong><span>{toIsraelTime(request.created_at)}</span></div>
+                <div className="detail-row"><strong>Source</strong><span>{request.source === 'telegram' ? 'Telegram' : 'Web'}</span></div>
                 <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
                 {request.file_path && (
                   <div className="detail-row full">
@@ -166,6 +172,12 @@ export default function RequestModal({ request, allRequests = [], onClose, onSta
           {tab === 'email' && (
             <div>
               <EmailPreview draft={draft} onChange={setDraft} />
+              {request.file_path && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '10px 0', padding: '8px 12px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, fontSize: 13, color: '#0369a1' }}>
+                  📎 <span>{request.file_path.replace(/^\d+_/, '')}</span>
+                  <span style={{ color: '#64748b' }}>— will be attached to the email</span>
+                </div>
+              )}
               <div className="modal-actions">
                 <button className="btn btn-primary" onClick={handleSendEmail} disabled={loading || !draft}>
                   {loading ? 'Sending...' : 'Send Email'}
@@ -220,7 +232,7 @@ export default function RequestModal({ request, allRequests = [], onClose, onSta
                   <div key={r.id} className="history-item">
                     <div className="history-meta">
                       <span className="history-from">{r.from_email}</span>
-                      <span className="history-date">{new Date(r.created_at).toLocaleString()}</span>
+                      <span className="history-date">{toIsraelTime(r.created_at)}</span>
                     </div>
                     <p className="history-text">{r.response_text}</p>
                   </div>

@@ -44,16 +44,38 @@ export default function Layout({ children, pageTitle, pageSubtitle, newCount, on
   }, [])
 
   useEffect(() => {
-    const seen = getSeenIds()
-    const ch = supabase
-      .channel('layout-notifs')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, ({ new: r }) => {
-        if (!seen.has(r.id)) {
-          setNotifs(prev => [r, ...prev].slice(0, 20))
+    const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+    let lastId = null
+
+    async function poll() {
+      try {
+        const res = await fetch(`${BASE}/requests`)
+        const data = await res.json()
+        const requests = data.requests || []
+        if (!requests.length) return
+
+        if (lastId === null) {
+          lastId = requests[0].id
+          return
         }
-      })
-      .subscribe()
-    return () => supabase.removeChannel(ch)
+
+        const newOnes = requests.filter(r => r.id > lastId)
+        if (newOnes.length > 0) {
+          lastId = newOnes[0].id
+          const seen = getSeenIds()
+          newOnes.forEach(r => {
+            if (!seen.has(r.id)) {
+              setNotifs(prev => [r, ...prev].slice(0, 20))
+            }
+          })
+          window.dispatchEvent(new CustomEvent('new-request'))
+        }
+      } catch {}
+    }
+
+    poll()
+    const interval = setInterval(poll, 15000)
+    return () => clearInterval(interval)
   }, [])
 
   function handleSearch(val) {
@@ -149,10 +171,13 @@ export default function Layout({ children, pageTitle, pageSubtitle, newCount, on
                     <div className="notif-empty">No new requests</div>
                   ) : (
                     notifs.map(r => (
-                      <div key={r.id} className="notif-item">
+                      <div key={r.id} className="notif-item" style={{ cursor: 'pointer' }} onClick={() => {
+                        setBellOpen(false)
+                        navigate(`/?open=${r.id}`)
+                      }}>
                         <span className="notif-name">{r.citizen_name}</span>
                         <span className="notif-cat">{r.category}</span>
-                        <span className="notif-time">{new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="notif-time">{(() => { const s = r.created_at; const d = new Date(s.endsWith('Z') || s.includes('+') ? s : s + 'Z'); return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' }) })()}</span>
                       </div>
                     ))
                   )}

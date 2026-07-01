@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Inbox, Sparkles, Send, CheckCircle } from 'lucide-react'
 import { getRequests } from '../api/requests'
 import RequestCard from './RequestCard'
 import RequestModal from './RequestModal'
 import Layout from './Layout'
-import supabase from '../api/supabase'
 import '../styles/dashboard.css'
 
 const container   = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }
@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [category, setCategory] = useState('')
   const [status, setStatus]     = useState('')
   const [sort, setSort]         = useState('date_desc')
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const fetchRequests = useCallback(async () => {
     setLoading(true); setError(null)
@@ -65,12 +66,19 @@ export default function Dashboard() {
   }, [fetchRequests])
 
   useEffect(() => {
-    const ch = supabase
-      .channel('requests-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, fetchRequests)
-      .subscribe()
-    return () => supabase.removeChannel(ch)
+    window.addEventListener('new-request', fetchRequests)
+    return () => window.removeEventListener('new-request', fetchRequests)
   }, [fetchRequests])
+
+  useEffect(() => {
+    const openId = searchParams.get('open')
+    if (!openId || !allRequests.length) return
+    const req = allRequests.find(r => r.id === parseInt(openId))
+    if (req) {
+      setSelected(req)
+      setSearchParams({})
+    }
+  }, [searchParams, allRequests])
 
   function handleStatusChange(id, newStatus) {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
@@ -119,9 +127,6 @@ export default function Dashboard() {
             <div className="kpi-icon kpi-icon--orange">
               <Sparkles size={15} strokeWidth={2} />
             </div>
-            {countNew > 0 && (
-              <span className="kpi-badge">+{countNew} today</span>
-            )}
           </div>
           <div className="kpi-num kpi-num--orange">{countNew}</div>
           <div className="kpi-lbl">New</div>
