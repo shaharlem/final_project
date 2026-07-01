@@ -89,6 +89,14 @@ export default function Reports() {
               <span className="kpi-value">{data.avgResponseDays}d</span>
             </div>
           )}
+          <div className="kpi-card" style={{ borderTop: '3px solid #1D4ED8' }}>
+            <span className="kpi-label">Via Telegram</span>
+            <span className="kpi-value" style={{ color: '#1D4ED8' }}>{data.bySource?.telegram || 0}</span>
+          </div>
+          <div className="kpi-card" style={{ borderTop: '3px solid #16A34A' }}>
+            <span className="kpi-label">Via Web</span>
+            <span className="kpi-value" style={{ color: '#16A34A' }}>{data.bySource?.web || 0}</span>
+          </div>
         </div>
 
         {/* Charts */}

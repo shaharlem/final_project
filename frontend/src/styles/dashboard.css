@@ -537,7 +537,7 @@
 .kpi-strip { display: flex; gap: 12px; flex-wrap: wrap; }
 .kpi-card {
   background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; min-width: 120px;
+  padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; min-width: 120px; flex: 1;
 }
 .kpi-label { font-size: 10px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
 .kpi-value { font-size: 26px; font-weight: 700; color: var(--text); font-family: var(--mono); letter-spacing: -0.4px; }
