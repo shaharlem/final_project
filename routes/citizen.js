@@ -85,6 +85,7 @@ router.post('/requests', handleUpload, async (req, res) => {
       category,
       message,
       status: 'new',
+      source: 'web',
       ai_category: aiResult ? aiResult.category : null,
       ai_confidence: aiResult ? aiResult.confidence : null,
       file_path,
