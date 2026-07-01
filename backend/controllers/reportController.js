@@ -5,18 +5,21 @@ exports.getReports = async (req, res, next) => {
   try {
     const { data, error } = await supabase
       .from('requests')
-      .select('status, category, created_at, updated_at')
+      .select('status, category, created_at, updated_at, source')
     if (error) throw error
 
     const byStatus = {}
     const byCategory = {}
     const byDay = {}
+    const bySource = { web: 0, telegram: 0 }
     let totalResponseMs = 0
     let respondedCount = 0
 
     for (const r of data) {
       byStatus[r.status] = (byStatus[r.status] || 0) + 1
       byCategory[normalizeCategory(r.category)] = (byCategory[normalizeCategory(r.category)] || 0) + 1
+      const src = r.source === 'telegram' ? 'telegram' : 'web'
+      bySource[src]++
 
       const day = r.created_at.slice(0, 10)
       byDay[day] = (byDay[day] || 0) + 1
@@ -45,6 +48,7 @@ exports.getReports = async (req, res, next) => {
       total: data.length,
       byStatus,
       byCategory,
+      bySource,
       last30,
       avgResponseDays
     })

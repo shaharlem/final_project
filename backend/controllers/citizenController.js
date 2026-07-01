@@ -21,7 +21,8 @@ exports.getCitizens = async (req, res, next) => {
           in_progress: 0,
           resolved: 0,
           categories: new Set(),
-          last_request: r.created_at
+          last_request: r.created_at,
+          first_request: r.created_at
         }
       }
       map[key].total++
@@ -31,6 +32,9 @@ exports.getCitizens = async (req, res, next) => {
       map[key].categories.add(normalizeCategory(r.category))
       if (new Date(r.created_at) > new Date(map[key].last_request)) {
         map[key].last_request = r.created_at
+      }
+      if (new Date(r.created_at) < new Date(map[key].first_request)) {
+        map[key].first_request = r.created_at
       }
     }
 

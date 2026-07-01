@@ -16,6 +16,13 @@ export default function Citizens() {
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
   const [search, setSearch]     = useState('')
+  const [sortKey, setSortKey]   = useState('last_request')
+  const [sortDir, setSortDir]   = useState('desc')
+
+  function toggleSort(key) {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('desc') }
+  }
 
   useEffect(() => {
     getCitizens()
@@ -24,10 +31,21 @@ export default function Citizens() {
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = citizens.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = citizens
+    .filter(c =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.email.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey]
+      if (sortKey === 'name') { va = va.toLowerCase(); vb = vb.toLowerCase() }
+      if (sortKey === 'last_request' || sortKey === 'first_request') {
+        va = new Date(va); vb = new Date(vb)
+      }
+      if (va < vb) return sortDir === 'asc' ? -1 : 1
+      if (va > vb) return sortDir === 'asc' ? 1 : -1
+      return 0
+    })
 
   return (
     <Layout pageTitle="Citizens" pageSubtitle={`${citizens.length} unique citizens`}>
@@ -48,7 +66,8 @@ export default function Citizens() {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search + Sort */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <div className="search-bar" style={{ maxWidth: 380 }}>
         <span className="search-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -59,6 +78,17 @@ export default function Citizens() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
+      </div>
+      <select className="filter-select" value={`${sortKey}|${sortDir}`} onChange={e => {
+        const [k, d] = e.target.value.split('|')
+        setSortKey(k); setSortDir(d)
+      }}>
+        <option value="last_request|desc">Last request</option>
+        <option value="first_request|desc">First request</option>
+        <option value="total|desc">Most requests</option>
+        <option value="name|asc">Name A → Z</option>
+        <option value="name|desc">Name Z → A</option>
+      </select>
       </div>
 
       {/* Table */}
@@ -77,6 +107,7 @@ export default function Citizens() {
                 <th>In progress</th>
                 <th>Resolved</th>
                 <th>Categories</th>
+                <th>First request</th>
                 <th>Last request</th>
               </tr>
             </thead>
@@ -108,6 +139,7 @@ export default function Citizens() {
                       ))}
                     </div>
                   </td>
+                  <td className="citizen-cell-date">{getDaysAgo(c.first_request)}</td>
                   <td className="citizen-cell-date">{getDaysAgo(c.last_request)}</td>
                 </tr>
               ))}

@@ -4,6 +4,15 @@ import { Bell, LogOut, Search, MoreHorizontal } from 'lucide-react'
 import supabase from '../api/supabase'
 import '../styles/layout.css'
 
+const SEEN_KEY = 'seen_request_ids'
+function getSeenIds() {
+  try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')) } catch { return new Set() }
+}
+function addSeenId(id) {
+  const s = getSeenIds(); s.add(id)
+  localStorage.setItem(SEEN_KEY, JSON.stringify([...s]))
+}
+
 const NAV = [
   { path: '/',         label: 'Requests' },
   { path: '/citizens', label: 'Citizens' },
@@ -13,9 +22,12 @@ const NAV = [
 export default function Layout({ children, pageTitle, pageSubtitle, newCount, onSearch, searchPlaceholder }) {
   const location  = useLocation()
   const navigate  = useNavigate()
-  const [search, setSearch] = useState('')
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [search, setSearch]       = useState('')
+  const [menuOpen, setMenuOpen]   = useState(false)
+  const [bellOpen, setBellOpen]   = useState(false)
+  const [notifs, setNotifs]       = useState([])
   const menuRef = useRef(null)
+  const bellRef = useRef(null)
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -25,9 +37,23 @@ export default function Layout({ children, pageTitle, pageSubtitle, newCount, on
   useEffect(() => {
     function onClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false)
+      if (bellRef.current && !bellRef.current.contains(e.target)) setBellOpen(false)
     }
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
+  }, [])
+
+  useEffect(() => {
+    const seen = getSeenIds()
+    const ch = supabase
+      .channel('layout-notifs')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'requests' }, ({ new: r }) => {
+        if (!seen.has(r.id)) {
+          setNotifs(prev => [r, ...prev].slice(0, 20))
+        }
+      })
+      .subscribe()
+    return () => supabase.removeChannel(ch)
   }, [])
 
   function handleSearch(val) {
@@ -44,7 +70,7 @@ export default function Layout({ children, pageTitle, pageSubtitle, newCount, on
 
       {/* ── Sidebar ── */}
       <aside className="sidebar">
-        <div className="sidebar-brand">
+        <div className="sidebar-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <img
             src="/arieh.png"
             className="sidebar-avatar-photo"
@@ -101,9 +127,38 @@ export default function Layout({ children, pageTitle, pageSubtitle, newCount, on
               </label>
             )}
 
-            <button className="topbar-icon-btn" aria-label="Notifications">
-              <Bell size={15} strokeWidth={1.75} />
-            </button>
+            <div className="topbar-menu-wrap" ref={bellRef}>
+              <button
+                className="topbar-icon-btn notif-btn"
+                aria-label="Notifications"
+                onClick={() => {
+                  setBellOpen(v => !v)
+                  notifs.forEach(r => addSeenId(r.id))
+                  if (!bellOpen) setNotifs(prev => prev.map(r => ({ ...r, _seen: true })))
+                }}
+              >
+                <Bell size={15} strokeWidth={1.75} />
+                {notifs.filter(r => !r._seen).length > 0 && (
+                  <span className="notif-badge">{notifs.filter(r => !r._seen).length}</span>
+                )}
+              </button>
+              {bellOpen && (
+                <div className="topbar-menu notif-menu">
+                  <div className="notif-menu-header">New requests</div>
+                  {notifs.length === 0 ? (
+                    <div className="notif-empty">No new requests</div>
+                  ) : (
+                    notifs.map(r => (
+                      <div key={r.id} className="notif-item">
+                        <span className="notif-name">{r.citizen_name}</span>
+                        <span className="notif-cat">{r.category}</span>
+                        <span className="notif-time">{new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
 
             <div className="topbar-menu-wrap" ref={menuRef}>
               <button
