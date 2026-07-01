@@ -1,15 +1,9 @@
-const nodemailer = require('nodemailer')
+const { Resend } = require('resend')
 const supabase = require('../models/database')
 const Response = require('../models/Response')
 const { validateStaffEmail } = require('../middleware/auth')
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 exports.saveResponse = async (req, res, next) => {
   try {
@@ -40,8 +34,8 @@ exports.saveResponse = async (req, res, next) => {
       </div>
     `
 
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: request.citizen_email,
       subject: `תשובה לבקשתך - מספר ${request.id}`,
       html: citizenEmailBody
