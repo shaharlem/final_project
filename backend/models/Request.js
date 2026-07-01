@@ -6,7 +6,14 @@ const Request = {
 
     if (category) query = query.eq('category', category)
     if (status) query = query.eq('status', status)
-    if (search) query = query.or(`citizen_name.ilike.%${search}%,citizen_email.ilike.%${search}%`)
+    if (search) {
+      const isId = /^\d+$/.test(search.trim())
+      if (isId) {
+        query = query.eq('id', parseInt(search.trim(), 10))
+      } else {
+        query = query.or(`citizen_name.ilike.%${search}%,citizen_email.ilike.%${search}%`)
+      }
+    }
 
     const { data, error } = await query
     if (error) throw error

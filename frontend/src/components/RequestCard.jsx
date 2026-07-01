@@ -65,6 +65,11 @@ export default function RequestCard({ request, onClick }) {
         <span className="days-elapsed">
           {days === 0 ? 'Today' : `${days}d ago`}
         </span>
+        {['new', 'sent', 'waiting_response'].includes(request.status) && days >= 3 && (
+          <span className={`delay-badge${days >= 7 ? ' delay-badge--critical' : ' delay-badge--warning'}`}>
+            {days}d without reply
+          </span>
+        )}
         <button className="view-btn" tabIndex={-1} aria-hidden="true">
           View →
         </button>
