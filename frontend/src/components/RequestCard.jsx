@@ -59,6 +59,9 @@ export default function RequestCard({ request, onClick }) {
           </span>
           <span>{request.category}</span>
         </div>
+        {request.source === 'telegram' && (
+          <span className="source-badge source-badge--telegram">Telegram</span>
+        )}
       </div>
 
       <div className="card-footer">
