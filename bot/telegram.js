@@ -101,6 +101,7 @@ function startBot() {
           category: session.data.category,
           message: session.data.message,
           status: 'new',
+          source: 'telegram',
           ai_category,
         })
         .select()
