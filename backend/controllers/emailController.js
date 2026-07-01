@@ -43,11 +43,35 @@ exports.sendEmail = async (req, res, next) => {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
+    const { data: request } = await supabase
+      .from('requests')
+      .select('file_path')
+      .eq('id', requestId)
+      .single()
+
+    const attachments = []
+    if (request?.file_path) {
+      try {
+        const { data: signed, error: signErr } = await supabase.storage
+          .from('request-files')
+          .createSignedUrl(request.file_path, 120)
+        if (signErr) throw signErr
+        const fileRes = await fetch(signed.signedUrl)
+        if (!fileRes.ok) throw new Error(`Storage fetch failed: ${fileRes.status}`)
+        const buffer = Buffer.from(await fileRes.arrayBuffer())
+        const filename = request.file_path.split('/').pop().replace(/^\d+_/, '')
+        attachments.push({ filename, content: buffer })
+      } catch (err) {
+        console.error('[email] Could not attach file:', err.message)
+      }
+    }
+
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to,
       subject,
-      html: plainToHtml(body)
+      html: plainToHtml(body),
+      attachments
     })
 
     await supabase
