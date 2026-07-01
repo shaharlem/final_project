@@ -1,15 +1,9 @@
-const nodemailer = require('nodemailer')
+const { Resend } = require('resend')
 const supabase = require('../models/database')
 const normalizeCategory = require('../models/normalizeCategory')
 const { getStaff } = require('../models/staffMap')
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 exports.getEmailDraft = async (req, res, next) => {
   try {
@@ -66,12 +60,15 @@ exports.sendEmail = async (req, res, next) => {
       }
     }
 
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to,
       subject,
       html: plainToHtml(body),
-      attachments
+      attachments: attachments.map(a => ({
+        filename: a.filename,
+        content: a.content.toString('base64')
+      }))
     })
 
     await supabase
