@@ -172,6 +172,12 @@ export default function RequestModal({ request, allRequests = [], onClose, onSta
           {tab === 'email' && (
             <div>
               <EmailPreview draft={draft} onChange={setDraft} />
+              {request.file_path && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '10px 0', padding: '8px 12px', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, fontSize: 13, color: '#0369a1' }}>
+                  📎 <span>{request.file_path.replace(/^\d+_/, '')}</span>
+                  <span style={{ color: '#64748b' }}>— will be attached to the email</span>
+                </div>
+              )}
               <div className="modal-actions">
                 <button className="btn btn-primary" onClick={handleSendEmail} disabled={loading || !draft}>
                   {loading ? 'Sending...' : 'Send Email'}
