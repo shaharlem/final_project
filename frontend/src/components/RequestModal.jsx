@@ -143,6 +143,7 @@ export default function RequestModal({ request, allRequests = [], onClose, onSta
                   <div className="detail-row"><strong>AI Confidence</strong><span>{Math.round(request.ai_confidence * 100)}%</span></div>
                 )}
                 <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
+                <div className="detail-row"><strong>Source</strong><span>{request.source === 'telegram' ? '✈ Telegram' : '🌐 Web'}</span></div>
                 <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
                 {request.file_path && (
                   <div className="detail-row full">
