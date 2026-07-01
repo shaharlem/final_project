@@ -38,28 +38,26 @@ async function saveRequest(bot, chatId, session, fileBuffer, fileName, fileMimeT
 
   const aiResult = await categorizeMessage(session.data.message);
 
-  const { data, error } = await supabase
-    .from('requests')
-    .insert({
-      citizen_name: session.data.citizen_name,
-      citizen_email: session.data.citizen_email,
-      citizen_phone: session.data.citizen_phone,
-      category: session.data.category,
-      message: session.data.message,
-      status: 'new',
-      ai_category: aiResult ? aiResult.category : null,
-      ai_confidence: aiResult ? aiResult.confidence : null,
-      file_path,
-    })
-    .select()
-    .single();
+  const { error } = await supabase
+  .from('requests')
+  .insert({
+    citizen_name: session.data.citizen_name,
+    citizen_email: session.data.citizen_email,
+    citizen_phone: session.data.citizen_phone,
+    category: session.data.category,
+    message: session.data.message,
+    status: 'new',
+    ai_category: aiResult ? aiResult.category : null,
+    ai_confidence: aiResult ? aiResult.confidence : null,
+    file_path,
+  });
 
-  if (error) {
-    console.error('Telegram insert error:', error);
-    bot.sendMessage(chatId, 'Sorry, something went wrong. Please try again later.');
-  } else {
-    bot.sendMessage(chatId, `Your request was received. Case number: ${data.id}. We will get back to you soon.`);
-  }
+if (error) {
+  console.error('Telegram insert error:', error);
+  bot.sendMessage(chatId, 'Sorry, something went wrong. Please try again later.');
+} else {
+  bot.sendMessage(chatId, 'Your request was received. We will get back to you soon.');
+}
 
   delete sessions[chatId];
 }
@@ -171,6 +169,11 @@ function startBot() {
     }
 
     if (session.step === 'email') {
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!EMAIL_REGEX.test(text)) {
+        bot.sendMessage(chatId, 'Please enter a valid email address');
+        return;
+      }
       session.data.citizen_email = text;
       session.step = 'phone';
       bot.sendMessage(chatId, 'What is your phone number?');
