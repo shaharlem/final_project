@@ -34,18 +34,24 @@ const CATEGORIES = [
 
 export default function Dashboard() {
   const [requests, setRequests] = useState([])
+  const [allRequests, setAllRequests] = useState([])
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
   const [selected, setSelected] = useState(null)
   const [search, setSearch]     = useState('')
   const [category, setCategory] = useState('')
   const [status, setStatus]     = useState('')
+  const [sort, setSort]         = useState('date_desc')
 
   const fetchRequests = useCallback(async () => {
     setLoading(true); setError(null)
     try {
-      const data = await getRequests({ category, status, search })
-      setRequests(data.requests || [])
+      const [filtered, all] = await Promise.all([
+        getRequests({ category, status, search }),
+        getRequests({ category, search }),
+      ])
+      setRequests(filtered.requests || [])
+      setAllRequests(all.requests || [])
     } catch {
       setError('Failed to load requests. Is the backend running?')
     } finally {
@@ -68,15 +74,24 @@ export default function Dashboard() {
 
   function handleStatusChange(id, newStatus) {
     setRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
+    setAllRequests(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r))
     if (selected?.id === id) setSelected(prev => ({ ...prev, status: newStatus }))
   }
 
-  const countNew       = requests.filter(r => r.status === 'new').length
-  const countProgress  = requests.filter(r => r.status === 'sent' || r.status === 'waiting_response').length
-  const countResponded = requests.filter(r => r.status === 'responded').length
+  const countNew       = allRequests.filter(r => r.status === 'new').length
+  const countProgress  = allRequests.filter(r => r.status === 'sent' || r.status === 'waiting_response').length
+  const countResponded = allRequests.filter(r => r.status === 'responded').length
 
-  const flagged = requests.filter(r => r.ai_confidence != null && r.ai_confidence < 0.8)
-  const normal  = requests.filter(r => !(r.ai_confidence != null && r.ai_confidence < 0.8))
+  const sortedRequests = [...requests].sort((a, b) => {
+    if (sort === 'date_desc') return new Date(b.created_at) - new Date(a.created_at)
+    if (sort === 'date_asc')  return new Date(a.created_at) - new Date(b.created_at)
+    if (sort === 'category')  return (a.category || '').localeCompare(b.category || '')
+    if (sort === 'status')    return (a.status || '').localeCompare(b.status || '')
+    return 0
+  })
+
+  const flagged = sortedRequests.filter(r => r.ai_confidence != null && r.ai_confidence < 0.8)
+  const normal  = sortedRequests.filter(r => !(r.ai_confidence != null && r.ai_confidence < 0.8))
 
   return (
     <Layout
@@ -95,7 +110,7 @@ export default function Dashboard() {
               <Inbox size={15} strokeWidth={2} />
             </div>
           </div>
-          <div className="kpi-num">{requests.length}</div>
+          <div className="kpi-num">{allRequests.length}</div>
           <div className="kpi-lbl">Total requests</div>
         </div>
 
@@ -138,6 +153,16 @@ export default function Dashboard() {
       <div className="section-header">
         <h2 className="section-title">Recent requests</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <select
+            className="filter-select"
+            value={sort}
+            onChange={e => setSort(e.target.value)}
+          >
+            <option value="date_desc">Newest first</option>
+            <option value="date_asc">Oldest first</option>
+            <option value="category">By category</option>
+            <option value="status">By status</option>
+          </select>
           <select
             className="filter-select"
             value={category}
@@ -197,6 +222,7 @@ export default function Dashboard() {
         {selected && (
           <RequestModal
             request={selected}
+            allRequests={allRequests}
             onClose={() => setSelected(null)}
             onStatusChange={handleStatusChange}
           />

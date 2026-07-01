@@ -1,24 +1,51 @@
 import { useState, useEffect } from 'react'
-import { getEmailDraft, sendEmail, saveResponse } from '../api/emails'
+import { getEmailDraft, sendEmail, saveResponse, getResponses } from '../api/emails'
 import { closeRequest } from '../api/requests'
 import StatusBadge from './StatusBadge'
 import EmailPreview from './EmailPreview'
+import supabase from '../api/supabase'
 
-export default function RequestModal({ request, onClose, onStatusChange }) {
+export default function RequestModal({ request, allRequests = [], onClose, onStatusChange }) {
   const [draft, setDraft] = useState(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState(null)
   const [tab, setTab] = useState('details')
   const [responseText, setResponseText] = useState('')
-  const [fromEmail, setFromEmail] = useState('')
+  const [fromEmail, setFromEmail] = useState('haimtouboul@gmail.com')
+  const [fileUrl, setFileUrl] = useState(null)
+  const [history, setHistory] = useState([])
 
   useEffect(() => {
     if (request) {
+      setFromEmail('haimtouboul@gmail.com')
       getEmailDraft(request.id)
         .then(setDraft)
         .catch(() => setMessage({ type: 'error', text: 'Could not load email draft' }))
+      getResponses(request.id)
+        .then(d => setHistory(d.responses || []))
+        .catch(() => setHistory([]))
     }
   }, [request])
+
+  useEffect(() => {
+    setFileUrl(null)
+    if (request?.file_path) {
+      const { data } = supabase.storage
+        .from('request-files')
+        .getPublicUrl(request.file_path)
+      if (data?.publicUrl) {
+        setFileUrl(data.publicUrl)
+      } else {
+        supabase.storage
+          .from('request-files')
+          .createSignedUrl(request.file_path, 3600)
+          .then(({ data: d, error }) => {
+            if (d?.signedUrl) setFileUrl(d.signedUrl)
+            else setFileUrl('error')
+          })
+      }
+    }
+  }, [request?.file_path])
 
   if (!request) return null
 
@@ -81,6 +108,9 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
           <button className={tab === 'details' ? 'active' : ''} onClick={() => setTab('details')}>Details</button>
           <button className={tab === 'email' ? 'active' : ''} onClick={() => setTab('email')}>Send Email</button>
           <button className={tab === 'response' ? 'active' : ''} onClick={() => setTab('response')}>Add Response</button>
+          <button className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>
+            History {history.length > 0 && <span className="tab-badge">{history.length}</span>}
+          </button>
         </div>
 
         <div className="modal-body">
@@ -90,6 +120,14 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
 
           {tab === 'details' && (
             <div>
+              {(() => {
+                const dupes = allRequests.filter(r => r.citizen_email === request.citizen_email && r.id !== request.id)
+                return dupes.length > 0 ? (
+                  <div className="alert alert-warning" style={{ marginBottom: '14px' }}>
+                    ⚠️ This citizen already submitted {dupes.length} other request{dupes.length > 1 ? 's' : ''}: {dupes.map(d => `#${d.id} (${d.category} — ${d.status})`).join(', ')}
+                  </div>
+                ) : null
+              })()}
               {request.ai_confidence != null && request.ai_confidence < 0.8 && (
                 <div className="alert alert-error" style={{ marginBottom: '14px' }}>
                   ⚠️ Low AI confidence ({Math.round(request.ai_confidence * 100)}%) — please verify the category manually before sending.
@@ -106,6 +144,20 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
                 )}
                 <div className="detail-row"><strong>Created</strong><span>{new Date(request.created_at).toLocaleString()}</span></div>
                 <div className="detail-row full"><strong>Message</strong><p>{request.message}</p></div>
+                {request.file_path && (
+                  <div className="detail-row full">
+                    <strong>Attached file</strong>
+                    {fileUrl && fileUrl !== 'error' ? (
+                      <a href={fileUrl} target="_blank" rel="noreferrer" className="file-attachment-link">
+                        📎 {request.file_path.replace(/^\d+_/, '')}
+                      </a>
+                    ) : fileUrl === 'error' ? (
+                      <span style={{ color: '#dc2626', fontSize: 13 }}>File unavailable (check Supabase Storage permissions)</span>
+                    ) : (
+                      <span style={{ color: '#9ca3af', fontSize: 13 }}>Loading…</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -123,6 +175,10 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
 
           {tab === 'response' && (
             <div className="response-form">
+              <div className="form-group">
+                <label>Sending to (citizen)</label>
+                <input type="email" value={request.citizen_email} readOnly style={{ background: '#f7f8fa', color: '#6b7280', cursor: 'default' }} />
+              </div>
               <div className="form-group">
                 <label>From Email (staff)</label>
                 <input
@@ -149,6 +205,26 @@ export default function RequestModal({ request, onClose, onStatusChange }) {
                   Close Request
                 </button>
               </div>
+            </div>
+          )}
+
+          {tab === 'history' && (
+            <div className="history-list">
+              {history.length === 0 ? (
+                <div className="empty" style={{ padding: '32px 0', textAlign: 'center', color: '#9ca3af' }}>
+                  No responses sent yet.
+                </div>
+              ) : (
+                history.map(r => (
+                  <div key={r.id} className="history-item">
+                    <div className="history-meta">
+                      <span className="history-from">{r.from_email}</span>
+                      <span className="history-date">{new Date(r.created_at).toLocaleString()}</span>
+                    </div>
+                    <p className="history-text">{r.response_text}</p>
+                  </div>
+                ))
+              )}
             </div>
           )}
         </div>

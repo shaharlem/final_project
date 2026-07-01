@@ -57,3 +57,13 @@ exports.saveResponse = async (req, res, next) => {
     next(err)
   }
 }
+
+exports.getResponses = async (req, res, next) => {
+  try {
+    const { requestId } = req.params
+    const responses = await Response.findByRequestId(requestId)
+    res.json({ responses })
+  } catch (err) {
+    next(err)
+  }
+}

@@ -25,3 +25,9 @@ export async function saveResponse({ requestId, responseText, fromEmail }) {
   if (!res.ok) throw new Error('Failed to save response')
   return res.json()
 }
+
+export async function getResponses(requestId) {
+  const res = await fetch(`${BASE_URL}/responses/${requestId}`)
+  if (!res.ok) throw new Error('Failed to get responses')
+  return res.json()
+}
